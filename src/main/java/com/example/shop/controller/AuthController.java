@@ -1,13 +1,16 @@
 package com.example.shop.controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.example.shop.model.User;
+import com.example.shop.dto.AuthRequest;
+import com.example.shop.dto.AuthResponse;
+import com.example.shop.dto.RegisterRequest;
 import com.example.shop.service.UserService;
 
+import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -17,14 +20,21 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userService.register(user);
-    }
-    
-    @PostMapping("/login")
-    public User login(@RequestBody User user) {
-        return userService.login(user.getUsername(), user.getPassword());
-    }
-    
+    @ResponseStatus(HttpStatus.CREATED)
+    public String register(
+            @Valid @RequestBody RegisterRequest request
+    ) {
 
+        userService.register(request);
+
+        return "User registered successfully";
+    }
+
+    @PostMapping("/login")
+    public AuthResponse login(
+            @Valid @RequestBody AuthRequest request
+    ) {
+
+        return userService.login(request);
+    }
 }
